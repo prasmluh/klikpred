@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Ad Targeting</title>
+    <style>
+        body { font-family: Arial, sans-serif; background-color: #f4f7f6; padding: 20px; }
+        .container { max-width: 600px; background: white; padding: 30px; border-radius: 10px; margin: auto; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+        h2 { text-align: center; color: #333; }
+        label { font-weight: bold; margin-top: 10px; display: block; }
+        input, select, button { width: 100%; padding: 10px; margin-top: 5px; border-radius: 5px; border: 1px solid #ccc; box-sizing: border-box; }
+        button { background-color: #007bff; color: white; border: none; cursor: pointer; font-size: 16px; margin-top: 20px; }
+        button:hover { background-color: #0056b3; }
+        #result { margin-top: 20px; padding: 15px; border-radius: 5px; text-align: center; font-weight: bold; display: none; }
+        .success { background-color: #d4edda; color: #155724; }
+        .danger { background-color: #f8d7da; color: #721c24; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>🎯 Smart Ad-Targeting Optimizer</h2>
+    <p style="text-align: center; color: #666;">Prediksi apakah target audiens akan mengklik iklan Anda.</p>
+    
+    <label>Usia (Tahun)</label>
+    <input type="number" id="age" value="30">
+
+    <label>Pendapatan Area (Rp)</label>
+    <input type="number" id="income" value="400000000">
+
+    <label>Waktu Harian di Web (Menit)</label>
+    <input type="number" id="time_on_site" value="60">
+
+    <label>Penggunaan Internet Harian (Menit)</label>
+    <input type="number" id="internet_usage" value="200">
+
+    <label>Jenis Kelamin</label>
+    <select id="gender">
+        <option value="1">Laki-Laki</option>
+        <option value="0">Perempuan</option>
+    </select>
+
+    <label>Kategori Iklan</label>
+    <select id="kategori">
+        <option value="Fashion">Fashion</option>
+        <option value="Food">Food</option>
+        <option value="Electronic">Electronic</option>
+        <option value="Travel">Travel</option>
+        <option value="House">House</option>
+    </select>
+
+    <label>Jam Tayang (0-23)</label>
+    <input type="number" id="jam_tayang" value="12" min="0" max="23">
+
+    <label>Hari Tayang</label>
+    <select id="hari">
+        <option value="Senin">Senin</option>
+        <option value="Selasa">Selasa</option>
+        <option value="Rabu">Rabu</option>
+        <option value="Kamis">Kamis</option>
+        <option value="Jumat">Jumat</option>
+        <option value="Sabtu">Sabtu</option>
+        <option value="Minggu">Minggu</option>
+    </select>
+
+    <button onclick="predict()">Prediksi Sekarang 🚀</button>
+
+    <div id="result"></div>
+</div>
+
+<script>
+    async function predict() {
+        const resultDiv = document.getElementById('result');
+        resultDiv.style.display = 'block';
+        resultDiv.innerText = "Memproses...";
+        resultDiv.className = "";
+
+        const data = {
+            age: document.getElementById('age').value,
+            income: document.getElementById('income').value,
+            time_on_site: document.getElementById('time_on_site').value,
+            internet_usage: document.getElementById('internet_usage').value,
+            gender: document.getElementById('gender').value,
+            kategori: document.getElementById('kategori').value,
+            jam_tayang: document.getElementById('jam_tayang').value,
+            hari: document.getElementById('hari').value
+        };
+
+        try {
+            const response = await fetch('/api/predict', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            });
+            const res = await response.json();
+
+            if (res.status === "success") {
+                if (res.prediksi === 1) {
+                    resultDiv.className = "success";
+                    resultDiv.innerHTML = `✅ REKOMENDASI: BID TARGET INI!<br>Probabilitas Klik: ${res.probabilitas}%`;
+                } else {
+                    resultDiv.className = "danger";
+                    resultDiv.innerHTML = `❌ JANGAN TAYANGKAN! (Wasted Impression)<br>Probabilitas Klik: ${res.probabilitas}%`;
+                }
+            } else {
+                resultDiv.innerText = "Terjadi kesalahan pada server.";
+            }
+        } catch (error) {
+            resultDiv.innerText = "Gagal menghubungi server.";
+        }
+    }
+</script>
+
+</body>
+</html>
